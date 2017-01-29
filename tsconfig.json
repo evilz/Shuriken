@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "none",
+        "noEmitOnError": false,
+        "noImplicitAny": false,
+        "removeComments": false,
+        "target": "es5",
+        "sourceMap": false,
+        "rootDir": "./src",
+        "outFile": "out/shuriken.js",
+      "outDir": "out",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "declaration": true
+    },
+    "exclude": [
+        "node_modules",
+        "out",
+        "test/_workspace"
+    ]
+}

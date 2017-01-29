@@ -1,0 +1,33 @@
+{
+  "name": "shuriken",
+  "version": "1.0.0",
+  "description": "A micro framework for JavaScript games.",
+  "main": "main.js",
+  "dependencies": {
+   
+  },
+  "devDependencies": {
+     "tslint": "^4.4.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evilz/Shuriken.git"
+  },
+  "keywords": [
+    "A",
+    "micro",
+    "framework",
+    "for",
+    "JavaScript",
+    "games."
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/evilz/Shuriken/issues"
+  },
+  "homepage": "https://github.com/evilz/Shuriken#readme"
+}
