@@ -1,4 +1,4 @@
-namespace shuriken {
+namespace Shuriken {
     
     export enum MouseClick {
         LEFT_MOUSE, //= "LEFT_MOUSE",

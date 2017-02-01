@@ -1,52 +1,47 @@
-namespace shuriken {
+namespace Shuriken {
 
     export class Entities {
 
-        private _shuriken: Shuriken;
-        private _game;
-        private _entities = [];
+        private shuriken: Shuriken;
+        private game: any;
+        private entities: IEntity[] = [];
 
-        constructor(shuriken: Shuriken, game) {
-            this._shuriken = shuriken;
-            this._game = game;
+        constructor(shuriken: Shuriken, game: any) {
+            this.shuriken = shuriken;
+            this.game = game;
         }
 
         public update(interval: number) {
-            let entities = this.all();
-            for (var i = 0, len = entities.length; i < len; i++) {
-                if (entities[i].update !== undefined) {
-                    entities[i].update(interval);
-                }
+            const entities = this.all();
+            for (const entity of entities.filter((x: IEntity) => x.update != null)){
+                    entity.update(interval);
             }
         }
 
-        public all(Constructor?) {
-            if (Constructor === undefined) {
-                return this._entities.slice(); // return shallow copy of array
-            }
-            else {
-                let entities = [];
-                for (var i = 0; i < this._entities.length; i++) {
-                    if (this._entities[i] instanceof Constructor) {
-                        entities.push(this._entities[i]);
-                    }
+        public all(Constructor?: FunctionConstructor) {
+            if (Constructor != null) {
+                const entities = [];
+                for (const entity of this.entities.filter((x: IEntity) => x instanceof Constructor)){
+                     entities.push(entity);
                 }
                 return entities;
+            } else {
+                return this.entities.slice(); // return shallow copy of array
             }
         }
 
-        public create(Constructor, settings) {
-            let entity = new Constructor(this._game, settings || {});
-            this._shuriken.collider.createEntity(entity);
-            this._entities.push(entity);
+        public create(Constructor: new (...args: any[]) => IEntity, settings: any) {
+            const entity = new Constructor(this.game, settings || {});
+            this.shuriken.collider.createEntity(entity);
+            this.entities.push(entity);
             return entity;
         }
 
-        public destroy(entity) {
-            for (var i = 0; i < this._entities.length; i++) {
-                if (this._entities[i] === entity) {
-                    this._shuriken.collider.destroyEntity(entity);
-                    this._entities.splice(i, 1);
+        public destroy(entity: IEntity) {
+            for (let i = 0; i < this.entities.length; i++) {
+                if (this.entities[i] === entity) {
+                    this.shuriken.collider.destroyEntity(entity);
+                    this.entities.splice(i, 1);
                     break;
                 }
             }

@@ -1,47 +1,45 @@
-namespace shuriken {
-    const interval = 16;
+namespace Shuriken {
+    // const interval = 16;
 
     export class Ticker {
 
-        private _nextTickFn: FrameRequestCallback;
-        private _gameLoop;
+        private nextTickFn: FrameRequestCallback;
+        private gameLoop: Function;
 
-        constructor(shuriken: Shuriken, gameLoop) {
+        constructor(shuriken: Shuriken, gameLoop: Function) {
             this.setupRequestAnimationFrame();
-            this._gameLoop = gameLoop;
+            this.gameLoop = gameLoop;
 
             this.start();
         }
 
         private start() {
             let prev = Date.now();
-            let tick = () => {
-                var now = Date.now();
-                var interval = now - prev;
+            const tick = () => {
+                const now = Date.now();
+                const interval = now - prev;
                 prev = now;
-                this._gameLoop(interval);
-                window.requestAnimationFrame(this._nextTickFn);
+                this.gameLoop(interval);
+                window.requestAnimationFrame(this.nextTickFn);
             };
 
-            this._nextTickFn = tick;
-            requestAnimationFrame(this._nextTickFn);
+            this.nextTickFn = tick;
+            requestAnimationFrame(this.nextTickFn);
         };
 
-        private stop = function () {
-            this.nextTickFn = function () { };
+        private stop() {
+            this.nextTickFn = () => null; ;
         }
 
         private setupRequestAnimationFrame() {
-            let lastTime = 0;
-            let vendors = ['ms', 'moz', 'webkit', 'o'];
-            for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-                window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-                window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame']
-                    || window[vendors[x] + 'CancelRequestAnimationFrame'];
+            const lastTime = 0;
+            const vendors = ["ms", "moz", "webkit", "o"];
+            const win = window as any;
+            for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = win[vendors[x] + "RequestAnimationFrame"];
+                window.cancelAnimationFrame = win[vendors[x] + "CancelAnimationFrame"]
+                    || win[vendors[x] + "CancelRequestAnimationFrame"];
             }
-
         };
     }
 }
-
-

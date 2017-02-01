@@ -1,29 +1,32 @@
-namespace shuriken {
+namespace Shuriken {
+
+    interface IRun {
+        obj: any;
+        fn: Function;
+    }
+
     export class Runner {
 
-        private _shuriken: Shuriken;
-        private _runs = [];
+        private shuriken: Shuriken;
+        private runs: IRun[] = [];
 
         constructor(shuriken: Shuriken) {
-            this._shuriken = shuriken;
+            this.shuriken = shuriken;
         }
 
         public update() {
             this.run();
         }
 
-        private run() {
-            while (this._runs.length > 0) {
-                let run = this._runs.shift();
-                run.fn(run.ojb);
-            }
+        public add(obj: any, fn: Function) {
+            this.runs.push({ obj, fn });
         }
 
-        public add(obj, fn) {
-            this._runs.push({
-                obj: obj,
-                fn: fn
-            });
+        private run() {
+            while (this.runs.length > 0) {
+                const run = this.runs.shift();
+                run.fn(run.obj);
+            }
         }
     }
 }

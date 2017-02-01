@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
         "module": "none",
-        "noEmitOnError": false,
-        "noImplicitAny": false,
+        "noEmitOnError": true,
+        "noImplicitAny": true,
         "removeComments": false,
         "target": "es5",
-        "sourceMap": false,
+        "sourceMap": true,
         "rootDir": "./src",
         "outFile": "out/shuriken.js",
       "outDir": "out",

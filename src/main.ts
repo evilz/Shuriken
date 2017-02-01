@@ -1,45 +1,40 @@
-namespace shuriken {
+namespace Shuriken {
 
     export class Shuriken {
 
-        private _renderer: Renderer;
-        private _inputter: Inputter;
-        private _entities: Entities;
-        private _runner: Runner;
-        private _collider: Collider;
-        private _ticker: Ticker;
+        public readonly inputter: Inputter;
+        public readonly entities: Entities;
+        public readonly collider: Collider;
 
-        constructor(game, canvasId, width, height, backgroundColor, autoFocus) {
-            let canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+        private renderer: Renderer;
+        private runner: Runner;
+        private ticker: Ticker;
 
-            this._renderer = new Renderer(this, game, canvas, width, height, backgroundColor);
-            this._inputter = new Inputter(this, canvas, autoFocus);
-            this._entities = new Entities(this, game);
-            this._runner = new Runner(this);
-            this._collider = new Collider(this);
-            this._ticker = new Ticker(this, (interval)=> {
-                this._runner.update();
+        constructor(game: any,
+                    canvasId: string,
+                    width: number,
+                    height: number,
+                    backgroundColor: string,
+                    autoFocus: boolean) {
+
+            const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+
+            this.renderer = new Renderer(this, game, canvas, width, height, backgroundColor);
+            this.inputter = new Inputter(this, canvas, autoFocus);
+            this.entities = new Entities(this, game);
+            this.runner = new Runner(this);
+            this.collider = new Collider(this);
+            this.ticker = new Ticker(this, (interval: number) => {
+                this.runner.update();
                 if (game.update !== undefined) {
                     game.update(interval);
                 }
 
-                this._entities.update(interval);
-                this._collider.update();
-                this._renderer.update(interval);
-                this._inputter.update();
-            })
-        }
-
-        get entities(): Entities {
-            return this._entities;
-        }
-
-        get collider(): Collider {
-            return this._collider;
-        }
-
-         get inputter(): Inputter {
-            return this._inputter;
+                this.entities.update(interval);
+                this.collider.update();
+                this.renderer.update(interval);
+                this.inputter.update();
+            });
         }
     }
 }

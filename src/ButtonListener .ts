@@ -1,68 +1,63 @@
-namespace shuriken{
+namespace Shuriken {
 
-export class ButtonListener {
+    export class ButtonListener {
 
-    private _buttonDownState = {};
-    private _buttonPressedState = {};
+        private buttonDownState: any = {};
+        private buttonPressedState: any = {};
 
-    constructor(canvas, keyboardReceiver) {
-        keyboardReceiver.addEventListener('keydown', (e) => {
-            this._down(e.keyCode);
-        }, false);
+        constructor(canvas: HTMLCanvasElement, keyboardReceiver: EventTarget) {
+            keyboardReceiver.addEventListener("keydown", (e: KeyboardEvent) => this._down(e.keyCode), false);
 
-        keyboardReceiver.addEventListener('keyup', (e) => {
-            this._up(e.keyCode);
-        }, false);
+            keyboardReceiver.addEventListener("keyup", (e: KeyboardEvent) => this._up(e.keyCode), false);
 
-        canvas.addEventListener('mousedown', (e) => {
-            this._down(this._getMouseButton(e));
-        }, false);
+            canvas.addEventListener("mousedown", (e) => this._down(this._getMouseButton(e)), false);
 
-        canvas.addEventListener('mouseup', (e) => {
-            this._up(this._getMouseButton(e));
-        }, false);
-    }
+            canvas.addEventListener("mouseup", (e) => this._up(this._getMouseButton(e)), false);
+        }
 
-    public update() {
-        for (var i in this._buttonPressedState) {
-            if (this._buttonPressedState[i] === true) {
-                this._buttonPressedState[i] = false;
+        public update() {
+            for (const i in this.buttonPressedState) {
+                if (this.buttonPressedState[i] === true) {
+                    this.buttonPressedState[i] = false;
+                }
             }
         }
-    }
 
-    private _down(buttonId) {
-        this._buttonDownState[buttonId] = true;
-        if (this._buttonPressedState[buttonId] === undefined) {
-            this._buttonPressedState[buttonId] = true;
+        public isDown(button: number): boolean {
+            return this.buttonDownState[button] || false;
         }
-    }
 
-    private _up(buttonId) {
-        this._buttonDownState[buttonId] = false;
-        if (this._buttonPressedState[buttonId] === false) {
-            this._buttonPressedState[buttonId] = undefined;
+        public isPressed(button: number): boolean {
+            return this.buttonPressedState[button] || false;
         }
-    }
 
-    public isDown(button): boolean {
-        return this._buttonDownState[button] || false;
-    }
-
-    public isPressed(button): boolean {
-        return this._buttonPressedState[button] || false;
-    }
-
-    private _getMouseButton(e) {
-        if (e.which !== undefined || e.button !== undefined) {
-            if (e.which === 3 || e.button === 2) {
-                return MouseClick.RIGHT_MOUSE;
-            } else if (e.which === 1 || e.button === 0 || e.button === 1) {
-                return MouseClick.LEFT_MOUSE;
+        private _down(buttonId: number) {
+            this.buttonDownState[buttonId] = true;
+            if (this.buttonPressedState[buttonId] === undefined) {
+                this.buttonPressedState[buttonId] = true;
             }
         }
-          throw "Cannot judge button pressed on passed mouse button event";
-    }
 
-  }
+        private _up(buttonId: number) {
+            this.buttonDownState[buttonId] = false;
+            if (this.buttonPressedState[buttonId] === false) {
+                this.buttonPressedState[buttonId] = undefined;
+            }
+
+        }
+
+
+
+        private _getMouseButton(e: MouseEvent) {
+            if (e.which !== undefined || e.button !== undefined) {
+                if (e.which === 3 || e.button === 2) {
+                    return MouseClick.RIGHT_MOUSE;
+                } else if (e.which === 1 || e.button === 0 || e.button === 1) {
+                    return MouseClick.LEFT_MOUSE;
+                }
+            }
+            throw new Error("Cannot judge button pressed on passed mouse button event");
+        }
+
+    }
 }

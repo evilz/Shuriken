@@ -1,61 +1,91 @@
-declare namespace shuriken {
+declare namespace Shuriken {
     class ButtonListener {
-        private _buttonDownState;
-        private _buttonPressedState;
-        constructor(canvas: any, keyboardReceiver: any);
+        private buttonDownState;
+        private buttonPressedState;
+        constructor(canvas: HTMLCanvasElement, keyboardReceiver: EventTarget);
         update(): void;
+        isDown(button: number): boolean;
+        isPressed(button: number): boolean;
         private _down(buttonId);
         private _up(buttonId);
-        isDown(button: any): boolean;
-        isPressed(button: any): boolean;
         private _getMouseButton(e);
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     class Collider {
-        static readonly RECTANGLE: number;
-        static readonly CIRCLE: number;
-        private _shuriken;
-        private _currentCollisionPairs;
+        private shuriken;
+        private currentCollisionPairs;
         constructor(shuriken: Shuriken);
-        private isSetupForCollisions(obj);
         update(): void;
+        createEntity(entity: IEntity): void;
+        destroyEntity(entity: IEntity): void;
+        isColliding(obj1: IEntity, obj2: IEntity): boolean;
+        isIntersecting(obj1: IEntity, obj2: IEntity): boolean;
+        private isSetupForCollisions(obj);
         private collision(entity1, entity2);
-        createEntity(entity: any): void;
-        destroyEntity(entity: any): void;
-        isColliding(obj1: any, obj2: any): boolean;
-        isIntersecting(obj1: any, obj2: any): boolean;
         private getBoundingBox(obj);
         private notifyEntityOfCollision(entity, other);
     }
 }
-declare namespace shuriken {
-    class Entities {
-        private _shuriken;
-        private _game;
-        private _entities;
-        constructor(shuriken: Shuriken, game: any);
-        update(interval: number): void;
-        all(Constructor?: any): any[];
-        create(Constructor: any, settings: any): any;
-        destroy(entity: any): void;
+declare namespace Shuriken {
+    enum ColliderShape {
+        RECTANGLE = 0,
+        CIRCLE = 1,
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
+    class Entities {
+        private shuriken;
+        private game;
+        private entities;
+        constructor(shuriken: Shuriken, game: any);
+        update(interval: number): void;
+        all(Constructor?: FunctionConstructor): IEntity[];
+        create(Constructor: new (...args: any[]) => IEntity, settings: any): IEntity;
+        destroy(entity: IEntity): void;
+    }
+}
+declare namespace Shuriken {
+    interface IPoint {
+        x: number;
+        y: number;
+    }
+    interface ISize {
+        width: number;
+        height: number;
+    }
+    interface IMinMax {
+        min: number;
+        max: number;
+    }
+    interface IEntityShape {
+        center: IPoint;
+        size: ISize;
+        angle?: number;
+        boundingBox?: ColliderShape;
+    }
+    interface IEntity extends IEntityShape {
+        zindex?: number;
+        update(timeSinceLastTick: number): void;
+        draw(canvasCtx: CanvasRenderingContext2D): void;
+        collision(other: IEntity): void;
+    }
+}
+declare namespace Shuriken {
     class Inputter {
-        private _buttonListener;
-        private _mouseMoveListener;
-        constructor(shuriken: Shuriken, canvas: any, autoFocus: any);
+        private buttonListener;
+        private mouseMoveListener;
+        constructor(shuriken: Shuriken, canvas: HTMLCanvasElement, autoFocus: boolean);
         update(): void;
-        isDown(button: any): any;
-        isPressed(button: any): any;
-        getMousePosition(): any;
-        bindMouseMove(fn: any): any;
-        unbindMouseMove(fn: any): any;
+        isDown(button: number): boolean;
+        isPressed(button: number): boolean;
+        getMousePosition(): IPoint;
+        bindMouseMove(fn: Function): void;
+        unbindMouseMove(fn: Function): void;
         private connectReceiverToKeyboard(keyboardReceiver, window, autoFocus);
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     enum MouseClick {
         LEFT_MOUSE = 0,
         RIGHT_MOUSE = 1,
@@ -144,120 +174,110 @@ declare namespace shuriken {
         SINGLE_QUOTE = 222,
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     class Shuriken {
-        private _renderer;
-        private _inputter;
-        private _entities;
-        private _runner;
-        private _collider;
-        private _ticker;
-        constructor(game: any, canvasId: any, width: any, height: any, backgroundColor: any, autoFocus: any);
+        readonly inputter: Inputter;
         readonly entities: Entities;
         readonly collider: Collider;
-        readonly inputter: Inputter;
+        private renderer;
+        private runner;
+        private ticker;
+        constructor(game: any, canvasId: string, width: number, height: number, backgroundColor: string, autoFocus: boolean);
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     class Maths {
-        static circlesIntersecting(obj1: any, obj2: any): boolean;
-        static rectanglesIntersecting(obj1: any, obj2: any): boolean;
-        static circleAndRectangleIntersecting(circleObj: any, rectangleObj: any): boolean;
-        static unrotatedRectanglesIntersecting(obj1: any, obj2: any): boolean;
-        static rotatedRectanglesIntersecting(obj1: any, obj2: any): boolean;
-        static pointInsideObj(point: any, obj: any): boolean;
-        static pointInsideRectangle(point: any, obj: any): boolean;
-        static pointInsideCircle(point: any, obj: any): boolean;
-        static distance(point1: any, point2: any): number;
-        static vectorTo(start: any, end: any): {
+        static readonly RADIANS_TO_DEGREES: number;
+        static circlesIntersecting(obj1: IEntity, obj2: IEntity): boolean;
+        static rectanglesIntersecting(obj1: IEntityShape, obj2: IEntityShape): boolean;
+        static circleAndRectangleIntersecting(circleObj: IEntity, rectangleObj: IEntity): boolean;
+        static unrotatedRectanglesIntersecting(obj1: IEntityShape, obj2: IEntityShape): boolean;
+        static rotatedRectanglesIntersecting(obj1: IEntityShape, obj2: IEntityShape): boolean;
+        static pointInsideObj(point: IPoint, obj: IEntity): boolean;
+        static pointInsideRectangle(point: IPoint, obj: IEntity): boolean;
+        static pointInsideCircle(point: IPoint, obj: IEntity): boolean;
+        static distance(point1: IPoint, point2: IPoint): number;
+        static vectorTo(start: IPoint, end: IPoint): {
             x: number;
             y: number;
         };
-        static magnitude(vector: any): number;
-        static leftNormalizedNormal(vector: any): {
-            x: number;
-            y: any;
-        };
-        static dotProduct(vector1: any, vector2: any): number;
-        static unitVector(vector: any): {
+        static magnitude(vector: IPoint): number;
+        static leftNormalizedNormal(vector: IPoint): {
             x: number;
             y: number;
         };
-        static projectionsSeparate(proj1: any, proj2: any): boolean;
-        static getMinMaxProjection(objCorners: any, normal: any): {
+        static dotProduct(vector1: IPoint, vector2: IPoint): number;
+        static unitVector(vector: IPoint): {
+            x: number;
+            y: number;
+        };
+        static projectionsSeparate(proj1: IMinMax, proj2: IMinMax): boolean;
+        static getMinMaxProjection(objCorners: IPoint[], normal: IPoint): {
             min: number;
             max: number;
         };
-        static rectangleCorners(obj: any): {
-            x: any;
-            y: any;
-        }[];
-        static rectangleSideVectors(obj: any): {
+        static rectangleCorners(obj: IEntityShape): {
             x: number;
             y: number;
         }[];
-        static rectanglePerpendicularNormals(obj: any): {
+        static rectangleSideVectors(obj: IEntityShape): {
             x: number;
-            y: any;
+            y: number;
+        }[];
+        static rectanglePerpendicularNormals(obj: IEntityShape): {
+            x: number;
+            y: number;
         }[];
         private static rotated(obj);
-        private static getAngle;
-        static getBoundingBox(obj: any): any;
-        static readonly RADIANS_TO_DEGREES: number;
+        private static getAngle(obj);
+        private static getBoundingBox(obj);
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     class MouseMoveListener {
-        private _bindings;
-        private _mousePosition;
+        private bindings;
+        private mousePosition;
         constructor(canvas: HTMLCanvasElement);
-        bind(fn: any): void;
-        unbind(fn: any): void;
-        getMousePosition(): any;
+        bind(fn: Function): void;
+        unbind(fn: Function): void;
+        getMousePosition(): IPoint;
         private _getAbsoluteMousePosition(e);
-        private getWindow;
+        private getWindow(document);
         private getElementPosition(element);
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     class Renderer {
-        private _shuriken;
-        private _game;
-        private _context;
-        private _backgroundColor;
-        private _viewSize;
-        private _viewCenter;
-        /**
-         *
-         */
-        constructor(shuriken: any, game: any, canvas: HTMLCanvasElement, wView: any, hView: any, backgroundColor: any);
         readonly context: CanvasRenderingContext2D;
-        readonly viewSize: any;
-        viewCenter: any;
-        background: any;
+        readonly viewSize: ISize;
+        viewCenter: IPoint;
+        backgroundColor: string;
+        private shuriken;
+        private game;
+        constructor(shuriken: Shuriken, game: any, canvas: HTMLCanvasElement, wView: number, hView: number, backgroundColor: string);
         update(interval: number): void;
-        onScreen(obj: any): boolean;
+        onScreen(obj: IEntityShape): boolean;
         private viewOffset(viewCenter, viewSize);
         private zindexSort(a, b);
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     class Runner {
-        private _shuriken;
-        private _runs;
+        private shuriken;
+        private runs;
         constructor(shuriken: Shuriken);
         update(): void;
+        add(obj: any, fn: Function): void;
         private run();
-        add(obj: any, fn: any): void;
     }
 }
-declare namespace shuriken {
+declare namespace Shuriken {
     class Ticker {
-        private _nextTickFn;
-        private _gameLoop;
-        constructor(shuriken: Shuriken, gameLoop: any);
+        private nextTickFn;
+        private gameLoop;
+        constructor(shuriken: Shuriken, gameLoop: Function);
         private start();
-        private stop;
+        private stop();
         private setupRequestAnimationFrame();
     }
 }

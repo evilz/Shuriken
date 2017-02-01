@@ -1,83 +1,65 @@
-namespace shuriken {
+namespace Shuriken {
 
     export class Renderer {
 
-        private _shuriken: Shuriken;
-        private _game;
-        private _context: CanvasRenderingContext2D;
-        private _backgroundColor;
+        public readonly context: CanvasRenderingContext2D;
+        public readonly viewSize: ISize;
+        public viewCenter: IPoint;
+        public backgroundColor: string;
 
-        private _viewSize;
-        private _viewCenter;
-        /**
-         *
-         */
-        constructor(shuriken, game, canvas: HTMLCanvasElement, wView, hView, backgroundColor) {
-            this._shuriken = shuriken;
-            this._game = game;
+        private shuriken: Shuriken;
+        private game: any;
+
+        constructor(shuriken: Shuriken,
+                    game: any,
+                    canvas: HTMLCanvasElement,
+                    wView: number,
+                    hView: number,
+                    backgroundColor: string) {
+
+            this.shuriken = shuriken;
+            this.game = game;
 
             canvas.style.outline = "none";
             canvas.style.cursor = "default";
 
-            this._context = canvas.getContext('2d');
-            this._backgroundColor = backgroundColor;
+            this.context = canvas.getContext("2d");
+            this.backgroundColor = backgroundColor;
 
             canvas.width = wView;
             canvas.height = hView;
 
-            this._viewSize = { x: wView, y: hView };
-            this._viewCenter = { x: this.viewSize.x / 2, y: this.viewSize.y / 2 };
-        }
-
-        get context() {
-            return this._context;
-        }
-
-        get viewSize() {
-            return this._viewSize;
-        }
-
-        get viewCenter() {
-            return this._viewCenter;
-        }
-
-        set viewCenter(value) {
-            this._viewCenter = value;
-        }
-
-        set background(color) {
-            this._backgroundColor = color;
+            this.viewSize = { width: wView, height: hView };
+            this.viewCenter = { x: this.viewSize.width / 2, y: this.viewSize.height / 2 };
         }
 
         public update(interval: number) {
-            let context = this.context;
-            let viewTranslate = this.viewOffset(this._viewCenter, this._viewSize);
+            const context = this.context;
+            const viewTranslate = this.viewOffset(this.viewCenter, this.viewSize);
 
             context.translate(viewTranslate.x, viewTranslate.y);
 
             // draw background
-            let viewArgs = [
-                this._viewCenter.x - this._viewSize.x / 2,
-                this._viewCenter.y - this._viewSize.y / 2,
-                this._viewSize.x,
-                this._viewSize.y
+            const viewArgs = [
+                this.viewCenter.x - this.viewSize.width / 2,
+                this.viewCenter.y - this.viewSize.height / 2,
+                this.viewSize.width,
+                this.viewSize.height,
             ];
 
-            if (this._backgroundColor !== undefined) {
-                context.fillStyle = this._backgroundColor;
+            if (this.backgroundColor !== undefined) {
+                context.fillStyle = this.backgroundColor;
                 context.fillRect.apply(context, viewArgs);
-            }
-            else {
+            } else {
                 context.clearRect.apply(context, viewArgs);
             }
 
             // draw game and entities
-            let drawables = [this._game]
-                .concat(this._shuriken.entities.all().sort(this.zindexSort));
+            const drawables = [this.game]
+                .concat(this.shuriken.entities.all().sort(this.zindexSort));
 
-            for (var i = 0, len = drawables.length; i < len; i++) {
-                if (drawables[i].draw !== undefined) {
-                    let drawable = drawables[i];
+            for (const drawable of drawables) {
+                if (drawable.draw !== undefined) {
 
                     context.save();
 
@@ -87,7 +69,7 @@ namespace shuriken {
                         context.translate(-drawable.center.x, -drawable.center.y);
                     }
 
-                    drawables[i].draw(context);
+                    drawable.draw(context);
 
                     context.restore();
                 }
@@ -95,24 +77,24 @@ namespace shuriken {
             context.translate(-viewTranslate.x, -viewTranslate.y);
         }
 
-        public onScreen(obj) {
+        public onScreen(obj: IEntityShape) {
             return Maths.rectanglesIntersecting(obj, {
-                size: this._viewSize,
                 center: {
-                    x: this._viewCenter.x,
-                    y: this._viewCenter.y
-                }
+                    x: this.viewCenter.x,
+                    y: this.viewCenter.y,
+                },
+                size: this.viewSize,
             });
         }
 
-        private viewOffset(viewCenter, viewSize) {
+        private viewOffset(viewCenter: IPoint, viewSize: ISize) {
             return {
-                x: -(viewCenter.x - viewSize.x / 2),
-                y: -(viewCenter.y - viewSize.y / 2),
+                x: -(viewCenter.x - viewSize.width / 2),
+                y: -(viewCenter.y - viewSize.height / 2),
             };
         }
 
-        private zindexSort(a, b) {
+        private zindexSort(a: IEntity, b: IEntity) {
             return (a.zindex || 0) < (b.zindex || 0) ? -1 : 1;
         }
     }
