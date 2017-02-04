@@ -1,14 +1,13 @@
 {
     "compilerOptions": {
-        "module": "amd",
+        "module": "none",
         "noEmitOnError": true,
         "noImplicitAny": true,
         "removeComments": false,
         "target": "es5",
         "sourceMap": true,
-        "rootDir": "./src",
-        "outFile": "out/shuriken.js",
-      "outDir": "out",
+        "rootDir": ".",
+        "outFile": "game.js",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "declaration": true
@@ -16,7 +15,6 @@
     "exclude": [
         "node_modules",
         "out",
-        "test/_workspace",
-        "games"
+        "test/_workspace"
     ]
 }

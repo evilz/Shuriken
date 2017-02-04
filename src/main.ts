@@ -5,8 +5,8 @@ namespace Shuriken {
         public readonly inputter: Inputter;
         public readonly entities: Entities;
         public readonly collider: Collider;
+        public renderer: Renderer;
 
-        private renderer: Renderer;
         private runner: Runner;
         private ticker: Ticker;
 

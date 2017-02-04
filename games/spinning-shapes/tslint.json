@@ -4,6 +4,9 @@
 		"no-namespace": [
 			false
 		],
-		"no-reference": false
+		"no-reference": false,
+		"max-classes-per-file": [
+			false
+		]
 	}
 }

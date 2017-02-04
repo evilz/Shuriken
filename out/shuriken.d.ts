@@ -179,7 +179,7 @@ declare namespace Shuriken {
         readonly inputter: Inputter;
         readonly entities: Entities;
         readonly collider: Collider;
-        private renderer;
+        renderer: Renderer;
         private runner;
         private ticker;
         constructor(game: any, canvasId: string, width: number, height: number, backgroundColor: string, autoFocus: boolean);
